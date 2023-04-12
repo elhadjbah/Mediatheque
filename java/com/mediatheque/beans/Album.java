@@ -1,14 +1,23 @@
 package com.mediatheque.beans;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-
 public class Album {
 	
     private Long id;
     private String description;
-    private Date dateSortie;
-    private BigDecimal prixAchat;
+    private String dateSortie;
+    private double prixAchat;
+    
+    public Album(Long id, String description, String dateSortie, double prixAchat) {
+	
+		if (id != null) { 
+			this.id = id;
+		}
+		this.description = description;
+		this.dateSortie = dateSortie;
+		this.prixAchat = prixAchat;
+	}
+
+	
 
     // Getter pour l'identifiant de l'album
     public Long getId() {
@@ -31,22 +40,22 @@ public class Album {
     }
 
     // Getter pour la date de sortie de l'album
-    public Date getDateSortie() {
+    public String getDateSortie() {
         return dateSortie;
     }
 
     // Setter pour la date de sortie de l'album
-    public void setDateSortie(Date dateSortie) {
+    public void setDateSortie(String dateSortie) {
         this.dateSortie = dateSortie;
     }
 
     // Getter pour le prix d'achat de l'album
-    public BigDecimal getPrixAchat() {
+    public double getPrixAchat() {
         return prixAchat;
     }
 
     // Setter pour le prix d'achat de l'album
-    public void setPrixAchat(BigDecimal prixAchat) {
+    public void setPrixAchat(double prixAchat) {
         this.prixAchat = prixAchat;
     }
 }

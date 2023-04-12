@@ -14,7 +14,6 @@ public class Artiste {
 		this.nationalite = nationalite;
 	}
 
-	// Accesseurs (getters) et mutateurs (setters)
     public Long getId() {
         return id;
     }

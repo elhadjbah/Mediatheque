@@ -1,6 +1,6 @@
 package com.mediatheque.dao;
 
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -25,10 +25,7 @@ public class DAOFactory {
         this.password = password;
     }
 
-    /*
-     * Méthode chargée de récupérer les informations de connexion à la base de
-     * données, charger le driver JDBC et retourner une instance de la Factory
-     */
+
     public static DAOFactory getInstance() throws DAOConfigurationException {
         Properties properties = new Properties();
         String url;
@@ -70,18 +67,19 @@ public class DAOFactory {
         return DriverManager.getConnection( url, username, password );
     }
 
-    /*
-     * Méthodes de récupération de l'implémentation des différents DAO (un seul
-     * pour le moment)
-     */
+
     public ArtisteDao getArtisteDao() {
         return new ArtisteDaoImp( this );
     }
-    /*
-    public AlbumDao getUtilisateurDao() {
-        return new AlbumDaoImpl( this );
+    
+    public AlbumDao getAlbumDao() {
+        return new AlbumDaoImp( this );
     }
     
+
+    
+
+    /*
     public AlbumArtisteDao getUtilisateurDao() {
         return new AlbumArtisteDaoImpl( this );
     }

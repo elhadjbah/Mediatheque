@@ -16,17 +16,19 @@ import com.mediatheque.forms.CreationArtisteForm;
 public class CreationArtiste extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ArtisteDao artisteDao;
+	private AlbumDao albumDao;
        
 	public void init() throws ServletException {
 		DAOFactory daoFactory = DAOFactory.getInstance();
         this.artisteDao = daoFactory.getArtisteDao();
+        this.albumDao = daoFactory.getAlbumDao();
     }
     /**
      * @see HttpServlet#HttpServlet()
      */
     public CreationArtiste() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**
@@ -34,7 +36,7 @@ public class CreationArtiste extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		this.getServletContext().getRequestDispatcher("/ajout_artiste.jsp").forward(request, response);
+		this.getServletContext().getRequestDispatcher("GestionAlbum").forward(request, response);
     
 	}
 
@@ -47,7 +49,8 @@ public class CreationArtiste extends HttpServlet {
 		CreationArtisteForm form = new CreationArtisteForm(artisteDao);
 		form.creerArtiste(request);
 		request.setAttribute("form", form);
-        this.getServletContext().getRequestDispatcher("/ListerArtiste").forward(request, response);
+		request.setAttribute("albums", this.albumDao.lister());
+        this.getServletContext().getRequestDispatcher("/lister_album.jsp").forward(request, response);
         
 	}
 

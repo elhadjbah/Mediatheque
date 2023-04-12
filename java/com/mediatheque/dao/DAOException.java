@@ -1,9 +1,7 @@
 package com.mediatheque.dao;
 
 public class DAOException extends RuntimeException {
-    /*
-     * Constructeurs
-     */
+
     public DAOException( String message ) {
         super( message );
     }

@@ -7,6 +7,9 @@
 <title>Test</title>
 </head>
 <body>
+	<a href="GestionAlbum">Aller vers la gestions des albums !</a><br/><br/>
+	<a href="./ajout_artiste.jsp">Ajouter Artiste !</a> <br/><br/>
+	
 	<h1>Liste des artistes</h1>
      <table class="table table-hover mt-4" border="1">
         <thead>
@@ -14,7 +17,9 @@
             <th scope="col">ID</th>
             <th scope="col">NOM</th>
             <th scope="col">NATIONALITE </th>
-            <th scope="col">ACTION </th>
+            <th scope="col">DETAIL </th>
+            <th scope="col">MODIFIER</th>
+            <th scope="col">SUPPRIMER </th>
             </tr>
         </thead>
         <tbody>
@@ -32,11 +37,9 @@
                 <td><c:out value="${ artiste.id }" /></td>
                 <td><c:out value="${ artiste.nom }" /></td>
                 <td><c:out value="${ artiste.nationalite }" /></td>
-                <td>
-                	<a href="ModifierArtiste?id=${artiste.id}"> Modifier </a><br>
-                	<a href="ModifierArtiste?id=${artiste.id}&action=delete" />"> Supprimer </a><br>
-                	<a href="detail_artiste.jsp?id=<c:out value="${artiste.id}" />"> <button>Detail</button> </a>
-                </td>
+                <td><a href="ModifierArtiste?id=${artiste.id}&action=detail"><button> Detail</button> </a></td>
+                <td><a href="ModifierArtiste?id=${artiste.id}&action=modifier"><button> Modifier</button> </a></td>
+                <td><a href="ModifierArtiste?id=${artiste.id}&action=delete"><button>Supprimer</button> </a></td>  
             </tr>   
         </c:forEach>           
         </tbody>

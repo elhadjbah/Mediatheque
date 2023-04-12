@@ -1,37 +1,36 @@
 package com.mediatheque.dao;
 
+import static com.mediatheque.dao.DAOUtilitaire.fermeturesSilencieuses;
+import static com.mediatheque.dao.DAOUtilitaire.initialisationRequetePreparee;
+
 import java.sql.Connection;
+//import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mediatheque.beans.Album;
-import com.mediatheque.beans.Artiste;
-import static com.mediatheque.dao.DAOUtilitaire.*;
+import com.mediatheque.beans.*;
 
-
-
-public class ArtisteDaoImp implements ArtisteDao {
-	
-	
+public class AlbumDaoImp implements AlbumDao{
 	private DAOFactory          daoFactory;
 
-	public ArtisteDaoImp( DAOFactory daoFactory ) {
+	public AlbumDaoImp( DAOFactory daoFactory ) {
         this.daoFactory = daoFactory;
     }
 	
-	private static final String SQL_SELECT        = "SELECT id, nom, nationalite FROM Artiste ORDER BY id desc";
-	private static final String SQL_SELECT_BY_ID = "SELECT id, nom,nationalite FROM Artiste WHERE id = ?";
-	private static final String SQL_INSERT = "INSERT INTO Artiste (nom, nationalite) VALUES (?, ?)";
-	private static final String SQL_UPDATE = "UPDATE Artiste SET nom = ?, nationalite = ? WHERE id = ?";
-	private static final String SQL_DELETE = "DELETE FROM Artiste WHERE id = ? ";
+	private static final String SQL_SELECT       = "SELECT id, description, date_sortie, prix_achat from Album ORDER BY id desc limit 5";
+	private static final String SQL_SELECT_BY_ID = "SELECT id, description, date_sortie, prix_achat from Album WHERE id = ?";
+	private static final String SQL_INSERT       = "INSERT INTO Album (description, date_sortie, prix_achat) VALUES (?, ?, ?)";
+	private static final String SQL_UPDATE       = "UPDATE Album SET description = ?, date_sortie = ?,prix_achat = ? WHERE id = ?";
+	private static final String SQL_DELETE       = "DELETE FROM Album WHERE id = ? ";
 
 	
 	
-    @Override
-    public void creer( Artiste artiste ) throws DAOException {
+
+    
+    public void creer( Album album ) throws DAOException {
     	
     	Connection connexion = null;
         PreparedStatement preparedStatement = null;
@@ -39,8 +38,10 @@ public class ArtisteDaoImp implements ArtisteDao {
         try {
             connexion = daoFactory.getConnection();
             preparedStatement = initialisationRequetePreparee( connexion, SQL_INSERT, true,
-                    artiste.getNom(),
-                    artiste.getNationalite());
+                    album.getDescription(),
+                    album.getDateSortie(),
+                    album.getPrixAchat()
+                    );
             int statut = preparedStatement.executeUpdate();
             if ( statut == 0 ) {
                 throw new DAOException( "Échec de la création du client, aucune ligne ajoutée dans la table." );
@@ -52,9 +53,9 @@ public class ArtisteDaoImp implements ArtisteDao {
     	
     }
     
-    @Override
-    public List<Artiste> lister() {
-        List<Artiste> artistes = new ArrayList<Artiste>();
+    
+    public List<Album> lister() {
+        List<Album> albums = new ArrayList<Album>();
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultat = null;
@@ -66,27 +67,28 @@ public class ArtisteDaoImp implements ArtisteDao {
 
             while (resultat.next()) {
 
-                artistes.add(map(resultat));
+                albums.add(map(resultat));
             }
         } catch (SQLException e) {
         	throw new DAOException( e );
         } finally {
             fermeturesSilencieuses( resultat, preparedStatement, connexion );
         }
-        return artistes;
+        return albums;
     }
     
-    private static Artiste map( ResultSet resultSet ) throws SQLException {
-    	Artiste artiste = new Artiste(
+    private static Album map( ResultSet resultSet ) throws SQLException {
+    	Album album = new Album(
     									resultSet.getLong( "id" ),
-										resultSet.getString( "nom" ),
-										resultSet.getString( "nationalite" )
+										resultSet.getString( "description" ),
+										resultSet.getString( "date_sortie" ),
+										resultSet.getDouble( "prix_achat" )
 						);
-        return artiste;
+        return album;
     }
     
-    @Override
-    public void modifier(Artiste artiste) throws DAOException {
+    
+    public void modifier(Album album) throws DAOException {
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
@@ -96,19 +98,20 @@ public class ArtisteDaoImp implements ArtisteDao {
             e.printStackTrace();
         }
         try {
-            if (artiste.getId() == null) {
+            if (album.getId() == null) {
                 throw new DAOException("Artiste id is null, cannot update.");
             }
 
             preparedStatement = connexion.prepareStatement(SQL_UPDATE);
-            preparedStatement.setString(1,artiste.getNom());
-            preparedStatement.setString(2,artiste.getNationalite());
-            preparedStatement.setLong(3, artiste.getId());
+            preparedStatement.setString(1,album.getDescription());
+            preparedStatement.setString(2, album.getDateSortie());
+            preparedStatement.setDouble(3,album.getPrixAchat());
+            preparedStatement.setLong(4, album.getId());
             int rowsUpdated = preparedStatement.executeUpdate();
 
             System.out.println(rowsUpdated + " row(s) updated.");
         } catch (SQLException e) {
-            throw new DAOException("Error updating artist with ID: " + artiste.getId(), e);
+            throw new DAOException("Error updating album with ID: " + album.getId(), e);
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -123,21 +126,21 @@ public class ArtisteDaoImp implements ArtisteDao {
         }
     }
 
-	@Override
-	public Artiste search(Long id) {
+	
+	public Album search(Long id) {
 		
 		try ( Connection connection = daoFactory.getConnection() ) {
-		
 			
 			try ( PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_ID) ) {
 				statement.setLong(1, id);
-				ArrayList<Artiste> artistes = new ArrayList<Artiste>();
+				ArrayList<Album> artistes = new ArrayList<Album>();
 				try ( ResultSet resultSet = statement.executeQuery() ) {
 					while (resultSet.next()) {
-						Artiste history = new Artiste(
+						Album history = new Album(
 								resultSet.getLong( "id" ),
-								resultSet.getString( "nom" ), 
-								resultSet.getString( "nationalite" )
+								resultSet.getString( "description" ),
+								resultSet.getString( "date_sortie" ),
+								resultSet.getDouble( "prix_achat" )
 						);
 
 						artistes.add(history);
@@ -157,7 +160,6 @@ public class ArtisteDaoImp implements ArtisteDao {
 	public Boolean supprimer(long id) {
 		
 		try ( Connection connection = daoFactory.getConnection() ) {
-			
 			try ( PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE) ) {
 				preparedStatement.setLong(1, id);
 				preparedStatement.execute();
@@ -169,25 +171,24 @@ public class ArtisteDaoImp implements ArtisteDao {
 		}
 		return false;
 	}
-	
-	public List<Album> getAlbumsByArtiste(int idArtiste) {
+	/*
+	public List<Album> getAlbumsByArtiste(int idArtiste) throws SQLException {
         List<Album> albums = new ArrayList<>();
-        
-		try ( Connection connection = daoFactory.getConnection() ) {
-			PreparedStatement stmt = connection.prepareStatement("SELECT a.* FROM Album a JOIN AlbumArtiste aa ON a.id = aa.id_album WHERE aa.id_artiste = ?");
-	        stmt.setInt(1, idArtiste);
-	        try (ResultSet rs = stmt.executeQuery()) {
-	            while (rs.next()) {
-	                Long id = (long) rs.getInt("id");
-	                String description = rs.getString("description");
-	                String dateSortie = rs.getString("date_sortie");
-	                Double prixAchat = rs.getDouble("prix_achat");
-	                albums.add(new Album(id, description, dateSortie, prixAchat));
-	            }
+        try (Connection connection = daoFactory.getConnection()) {
+        	PreparedStatement stmt = connection.prepareStatement("SELECT a.* FROM Album a JOIN AlbumArtiste aa ON a.id = aa.id_album WHERE aa.id_artiste = ?");
+            stmt.setInt(1, idArtiste);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Long id = rs.getLong("id");
+                    String description = rs.getString("description");
+                    String dateSortie = rs.getString("date_sortie");
+                    double prixAchat = rs.getDouble("prix_achat");
+                    albums.add(new Album(id, description, dateSortie, prixAchat));
+                }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
 	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
 	    }
 	    return albums;
-	}
+	}*/
 }
